@@ -28,18 +28,23 @@ void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
             // scaling formula: ((prev - prev_min)/(prev_max - prev_min)) * (new_max - new_min) + new_min
             double x_scaled = i/1600 * (1 + 2.5) - 2.5;
             double y_scaled = j/900 * (1.25 + 1.25) - 1.25;
+
             state->a = std::complex<double>(x_scaled, y_scaled);
+            state->b = 0;
+            state->c = 0;
+            state->d = 0;
 
             int overflow_iterations = 0;
             int program_len = std::strlen(program);
             int pc = 0;
+            bool overflow = false;
 
-            while (overflow_iterations < 256) {
+            while (overflow_iterations < 255) {
                 char op = program[pc];
                 char program_reg1 = program[pc + 1];
                 char program_reg2 = program[pc + 2];
 
-                std::complex<int> reg1;
+                std::complex<double> reg1;
                 switch (program_reg1) {
                     case 'a':
                         reg1 = state->a;
@@ -55,7 +60,7 @@ void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
                         break;
                 }
 
-                std::complex<int> reg2;
+                std::complex<double> reg2;
                 switch (program_reg2) {
                     case 'a':
                         reg2 = state->a;
@@ -72,12 +77,14 @@ void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
                 }
 
                 if (std::sqrt(std::pow(reg2.real(), 2)) + std::pow(reg2.imag(), 2) > 2.0) {
+                    overflow = true;
+                    output[i][j] = overflow_iterations;
                     break;
                 }
 
                 switch (op) {
                     case '=':
-                        reg1 = reg2;
+                        reg2 = reg1;
                         break;
                     case '+':
                         reg2 += reg1;
@@ -86,12 +93,13 @@ void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
                         reg2 *= reg1;
                         break;
                 }
-
                 pc = (pc + 3) % program_len;
                 overflow_iterations += 1;
             }
 
-            output[i][j] = overflow_iterations;
+            if (overflow == false) {
+                output[i][j] = 255;
+            }
         }
     }
 

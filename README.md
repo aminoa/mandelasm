@@ -1,3 +1,3 @@
 # MandelASM JIT
 
-Following Spencer Tipping's tutorial [here](https://github.com/spencertipping/jit-tutorial) to write a JIT.
+Followed Spencer Tipping's tutorial [here](https://github.com/spencertipping/jit-tutorial), modified to replace the code with hints, to learn about JITs.
