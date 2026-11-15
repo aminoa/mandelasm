@@ -16,12 +16,8 @@ enum MandelOp {
 };
 
 void draw_output(int (&output)[1600][900]) {
-    for (int i = 0; i < 900; i++) {
-        for (int j = 0; j < 1600; j++) {
-            std::cout << output[i][j];
-        }
-        std::cout << std::endl;
-    }
+    std::cout << "P5\n1600 900\n255\n";
+    std::cout.write(reinterpret_cast<const char*>(output), 1600 * 900);
 }
 
 void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
@@ -75,13 +71,14 @@ void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
                         break;
                 }
 
-                if (std::abs(reg2.real()) > 2.0 || std::abs(reg2.imag()) > 2.0)  {
+                if (std::sqrt(std::pow(reg2.real(), 2)) + std::pow(reg2.imag(), 2) > 2.0) {
                     break;
                 }
 
                 switch (op) {
                     case '=':
                         reg1 = reg2;
+                        break;
                     case '+':
                         reg2 += reg1;
                         break;
@@ -90,8 +87,6 @@ void run_program(Mandel* state, char* program, int (&output)[1600][900]) {
                         break;
                 }
 
-                // std::cout << reg1 << std::endl;
-                // std::cout << reg2 << std::endl;
                 pc = (pc + 3) % program_len;
                 overflow_iterations += 1;
             }
