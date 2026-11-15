@@ -33,7 +33,7 @@ void debug_draw_output(uint8_t output[][900]) {
 }
 
 void draw_output(uint8_t (&output)[1600][900]) {
-    std::cout << "P5\n1600 900\n255\n";
+    std::cout << "P5\n900 1600\n255\n";
     std::cout.write(reinterpret_cast<const char*>(output), 1600 * 900);
 }
 
